@@ -1,0 +1,373 @@
+文件包含
+
+system exec shell_exec pcntl_exec popen proc_popen passthru
+
+>>>>
+
+文件包含
+
+include include_once require require_once
+
+本地文件包含：
+filename=haha.html
+
+如果你文件上传到了一个其他位置，你就需要在当前目录下模拟进入该位置
+fi_local.php?filename=../../../wiki/haha.html
+
+远程文件包含：
+filename=http://127.0.0.1/haha.html
+
+>>>>
+任意文件下载：
+
+http://pikachu.com//vul/unsafedownload/execdownload.php?filename=../key.txt
+
+>>>>
+
+文件上传：
+
+越权操作：
+
+水平越权：
+用户A----用户B
+网站没有使用cookie/session鉴别是不是真的是用户传过来的
+
+垂直越权：
+用户A---管理员A
+一些只能admin用户使用的程序，没有鉴权，直接可以访问，当其他人知道你这个程序位置的时候，就可以直接访问，代替admin行使权限
+>>>>
+
+目录遍历：
+和文件包含很类似
+/dir_list.php?title=../
+/dir_list.php?title=../../
+/dir_list.php?title=../../../
+有可能会出现文件夹的图案，让人可以知道网站的目录结构
+
+
+
+++++++++++
+
+正则表达式以及PHP
+
+\  转义字符，可以把程序转为字符，可以把字符变为程序
+
+\w 匹配所有的字符，但是不匹配符号
+\w\w\w 匹配连续3个字符
+\w{5} 匹配连续5个字符
+\w+ 匹配整块的字符
+
+\s 匹配空格
+^ 以什么开头
+$ 以什么结尾
+
+\b 单词界定符
+\b\w{3}\b 把3个字母连起来的东西当作单词，选出来
+
+\d 数字界定符
+\d{3}-\d{3}
+
+* 匹配0或多次
++ 匹配1或多次
+. 匹配除了换行符以外的单字符
+? 前面的表达式出现了0/1次
+\ 转义字符
+
+.* 贪婪匹配
+
+\w+@\w+\.(net|org) 匹配邮箱
+[a]?aha 
+[a]+aha 
+
+[1-3]{3} 匹配1-3的数字连续出现3次
+[1-9]{2,} 匹配1-9的数字连续出现2次或多次
+^(h|x)aha 匹配以h或者x开头后面是aha的行
+
+?= 正先行断言
+?=.....
+(x|h)aha(?=\swocao)
+空格+wocao是先决条件，匹配前面的x/haha
+
+?! 负先行断言
+?!....
+(x|h)aha(?!\swocao)
+空格+wocao是先决条件，但是不采纳，然后匹配x/haha
+
+?<= 正后发断言
+?<=.....
+(?<=(x|h)aha\s)(nihao|wo)
+匹配nihao/wo，前面跟的是x/haha+空格
+
+?<! 负后发断言
+(?<!(x|h)aha\s)(nihao|wo)
+匹配nihao/wo，前面是x/haha+空格不采纳
+
+
+^(((([01]?\d\d?|2[0-4]\d|25[0-5]))\.){3})(([01]?\d\d?|2[0-4]\d|25[0-5]))$
+
+php正则表达式使用
+
+<?php
+(?<=<script>)(.*?)
+$string1 = "haha 123 456 789";
+
+//匹配什么东西
+$pa = '/(\d)/i';
+
+echo preg_replace($pa, "xxxx", $string1);
+
+?>
+
+<?php
+
+$string1 = "haha 123 456 789";
+
+//匹配什么东西
+$pa = '/(\w+) (\d+) (\d+) (\d+)/i';
+
+//匹配的替换为什么东西
+$replace = 'nihao ${2} ${3}';
+
+//preg_replace('/(\w+) (\d+) (\d+) (\d+)/i', 'nihao ${2} ${3}', "haha 123 456 789");
+//                1      2     3     4
+//               haha   123    456   789
+
+echo preg_replace($pa, $replace, $string1);
+?>
+
+带引号
+\\1 = ${1} = $1
+
+(?<=<script>)(.*?)(?=</script>)
+
+序列化与反序列化相关：
+序列化与反序列化
+
+<?php 
+
+class auth{
+	public $user;
+	public $pass;
+
+}
+
+//把auth类实例化
+/*
+$a = new auth();
+$a->user="haha";
+$a->pass="nihao";
+*/
+
+//进行序列化
+//O:4:"auth":2:{s:4:"user";s:4:"haha";s:4:"pass";s:5:"nihao";}
+//echo serialize($a);
+
+//反序列化
+$str1 = 'O:4:"auth":2:{s:4:"user";s:5:"haha1";s:4:"pass";s:6:"nihao2";}';
+$b = unserialize($str1);
+
+echo $b->user;
+
+?>
+echo serialize($a);
+s:8:"CISP-PTE";
+===================================
+
+1.0
+
+<?php
+
+//序列化和反序列化
+
+class people{
+	//类变量
+	public $name;
+	public $age;
+
+	//构造函数，new类时候自动调用
+	function __construct(){
+		echo '构造函数被调用了<br/>';
+	}
+
+	//析构函数，事情做完之后调用
+	function __destruct(){
+		echo '析构函数调用<br/>';
+	}
+
+	//反序列化之后立马调用的函数
+	function __wakeup(){
+		echo '有东西被反序列化啦<br/>';
+	}
+
+
+	//类函数
+	function shuohua(){
+		echo 'wo jiao '.$this->name." jin nian ".$this->age." sui<br/>";
+	}
+}
+
+/*
+//初始化类
+$ren1 = new people();
+//给类变量赋值
+$ren1->name="xiaoming";
+$ren1->age = 20;
+//使用类方法
+$ren1->shuohua();
+
+
+//把ren1进行序列化
+$xuliehua_ren1 = serialize($ren1);
+//O:6:"people":2:{s:4:"name";s:8:"xiaoming";s:3:"age";i:20;}
+echo $xuliehua_ren1.'<br/>';
+*/
+
+//反序列化
+$str1 = 'O:6:"people":2:{s:4:"name";s:8:"xiaoming";s:3:"age";i:20;}';
+$copy_ren1 = unserialize($str1);
+
+$copy_ren1->shuohua();
+
+?>
+
+
+
+CISP-PTE
+
+
+---------------------------
+2.0
+
+<?php
+
+//序列化和反序列化
+class people{
+	//变量
+	public $name;
+	public $age;
+	public $job;
+
+	//构造函数,new的时候自动调用
+	function __construct(){
+		echo '构造函数启动<br/>';
+	}
+
+	//析构函数，事情做完了之后调用
+	function __destruct(){
+		echo '析构函数调用<br/>';
+		echo '没问题，保存进度<br/>';
+	}
+
+	//反序列化自动调用
+	function __wakeup(){
+		echo '反序列化启动<br/>';
+		echo '防火墙启动，不要乱来<br/>';
+	}
+
+	//类函数
+	function shuohua(){
+		echo 'wo jiao '.$this->name.' nian ling '.$this->age.' sui job is '.$this->job.'<br/>';
+	}
+
+}
+
+/*
+//初始化
+$ren1 = new people();
+$ren1->name = "xiaoming";
+$ren1->age = 20;
+$ren1->job = "driver";
+$ren1->shuohua();
+
+//序列化
+$code = serialize($ren1);
+//O:6:"people":3:{s:4:"name";s:8:"xiaoming";s:3:"age";i:20;s:3:"job";s:6:"driver";}
+echo $code.'<br/>';
+*/
+
+/*
+//当传入的需要反序列化的字符串，有多少个参数的位置，发生错误，wakeup不会启动
+$str1 = 'O:6:"people":3:{s:4:"name";s:8:"xiaoming";s:3:"age";i:20;s:3:"job";s:6:"driver";}';
+$copy_ren1 = unserialize($str1);
+$copy_ren1->shuohua();
+*/
+
+?>
+
+
+
+protected属性序列化之后
+%00*%00名字
+
+private属性序列化之后
+%00类名%00名字
+
+
+---------------------
+<?php
+
+//序列化和反序列化
+class people{
+	//变量
+	public $name;
+	protected $age = 20;
+	private $job = "driver";
+
+	//构造函数,new的时候自动调用
+	function __construct(){
+		echo '构造函数启动<br/>';
+	}
+
+	//析构函数，事情做完了之后调用
+	function __destruct(){
+		echo '析构函数调用<br/>';
+		echo '没问题，保存进度<br/>';
+	}
+
+	//反序列化自动调用
+	function __wakeup(){
+		echo '反序列化启动<br/>';
+		echo '防火墙启动，不要乱来<br/>';
+	}
+
+	//类函数
+	function shuohua(){
+		echo 'wo jiao '.$this->name.' nian ling '.$this->age.' sui job is '.$this->job.'<br/>';
+	}
+
+}
+
+
+//初始化
+/*
+$ren1 = new people();
+$ren1->name = "xiaoming";
+$ren1->shuohua();
+*/
+
+//序列化
+//O:6:"people":3:{s:4:"name";s:8:"xiaoming";s:3:"age";i:20;s:3:"job";s:6:"driver";}
+//O:6:"people":3:{s:4:"name";s:8:"xiaoming";s:6:"*age";i:20;s:11:"peoplejob";s:6:"driver";}
+/*
+protected属性序列化之后
+%00*%00名字
+
+private属性序列化之后
+%00类名%00名字
+*/
+/*
+$code = serialize($ren1);
+echo $code.'<br/>';
+*/
+
+
+/**/
+//当传入的需要反序列化的字符串，有多少个参数的位置，发生错误，wakeup不会启动
+//$str1 = 'O:6:"people":3:{s:4:"name";s:8:"xiaoming";s:6:"%00*%00age";i:20;s:11:"%00people%00job";s:6:"driver";}';
+
+///s.php?str1=O:6:"people":3:{s:4:"name";s:8:"xiaoming";s:6:"%00*%00age";i:20;s:11:"%00people%00job";s:6:"driver";}
+$copy_ren1 = unserialize($_GET['str1']);
+$copy_ren1->shuohua();
+
+
+?>

